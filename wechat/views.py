@@ -4,8 +4,12 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-import hashlib
+from django.utils.encoding import smart_str
+import xml.etree.ElementTree as ET
+from django.template import RequestContext, loader
 
+import hashlib
+import time
 @csrf_exempt
 
 def index(request):
@@ -14,6 +18,28 @@ def index(request):
 		return response
 	else:
 		#return HttpResponse('Hello World')
+		xml_str = smart_str(request.body)
+		#request_xml = etree.fromstring(xml_str)
+		response_xml = ET.fromstring(xml_str)
+
+		content=response_xml.find("Content").text
+		msgType=response_xml.find("MsgType").text
+		fromUser=response_xml.find("FromUserName").text
+		toUser=response_xml.find("ToUserName").text
+
+		template = loader.get_template('wechat/reply_text.xml')
+		#return render.reply_text(fromUser,toUser,int(time.time()),content)
+		#c = RequestContext({'toUser': toUser, 'fromUser': fromUser, 
+		#				'nowtime': int(time.time()), 'content': content})
+		c = {
+				'toUser': fromUser, 
+				'fromUser': toUser, 
+				'nowtime': str(int(time.time())), 
+				'content': content
+		}
+
+		return render(request,'wechat/reply_text.xml',c)
+		#return HttpResponse(template.render(c))
 	
 
 def checkSignature(request):
