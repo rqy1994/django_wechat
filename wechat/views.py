@@ -31,6 +31,9 @@ def index(request):
 		#return render.reply_text(fromUser,toUser,int(time.time()),content)
 		#c = RequestContext({'toUser': toUser, 'fromUser': fromUser, 
 		#				'nowtime': int(time.time()), 'content': content})
+
+		#test turing rebot
+		content = turing(content,fromUser)
 		c = {
 				'toUser': fromUser, 
 				'fromUser': toUser, 
@@ -57,3 +60,17 @@ def checkSignature(request):
 		return echostr
 	else:
 		return None
+
+import requests
+def turing(ask,uid):
+	url = 'http://www.tuling123.com/openapi/api'
+	data = {
+		'key':'ab88d67fd5d83167de20708dff40de5b',
+		'info':ask,
+		'userid':uid
+	}
+	s = requests.session()
+	return s.post(url = url,data = data).text[23:-2]
+	
+
+	
